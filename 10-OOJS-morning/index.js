@@ -30,6 +30,7 @@
 //     console.log(this)
 // }
 
+//Note: Parent Class or Super Class
 class Animal {
   constructor(name, age, color, breed, image, species) {
     this.species = species;
@@ -43,6 +44,8 @@ class Animal {
     return true;
   }
 }
+
+//Note: Children Class
 class Dog extends Animal {
   constructor(name, age, color, breed, image, species) {
     super(species, name, age, color, breed, image);
@@ -61,19 +64,22 @@ class Cat extends Animal {
   addFood(food) {
     this.favFood = [...this.favFood, food];
   }
-
+  
   loopThroughFoods() {
     console.log(this);
-    this.favFood.forEach((food) => console.log(`${this.name} loves ${food}`));
+    //Note: Callbacks lose the context of this
+    //Note: Without bind, this will be undefined
+    this.favFood.forEach(this.logFoods.bind(this));
   }
-  // logFoods(food){
-  //     console.log(this)
-  //     console.log(`${this.name} loves ${food}`)
-  // }
+  logFoods(food){
+      console.log(this)
+      console.log(`${this.name} loves ${food}`)
+  }
 
   loopThroughFoodsArrow() {
     this.favFood.forEach(this.logFoodsArrow);
   }
+  //Note: Arrow functions inherit this through context
   logFoodsArrow = (food) => console.log(`${this.name} loves ${food}`);
 }
 
@@ -112,6 +118,9 @@ rose.addFood("ix's food");
 
 // let {name, age, likesMice} = luke
 // console.log(name, age, likesMice)
+
+//Note: Destructuring 
+//Objects
 let { age, name, image } = luke;
 console.log(name, age, image);
 
@@ -119,7 +128,7 @@ function birthDay({ age, name }) {
   console.log(`Happy Birthday ${name} you are ${age} old!`);
 }
 birthDay(rose);
-
+//Arrays
 let [food1, food2] = rose.favFood;
 console.log(food1, food2);
 
