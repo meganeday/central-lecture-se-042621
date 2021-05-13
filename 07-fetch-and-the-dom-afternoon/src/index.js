@@ -1,92 +1,85 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const form = document.querySelector('#pokemon-post-form')
-    form.addEventListener('submit', addPokemon)
-    getAllPokemon()
+    const pokemonForm = document.querySelector('form')
+    pokemonForm.addEventListener('submit', addPokemon) 
+    fetchAll()
 })
-//Bulbasaur
-// console.log('before count')
-// function count(){
-//     let i = 0
-//     while(i < 5){
-//         console.log(i)
-//         i++
-//     }
-// }
-// count()
-// console.log('after count')
 
-// console.log('before fetch')
+// fetch
 
-//Fetch
-
-function getAllPokemon(){
-    fetch('http://localhost:3000/pokemon')
-    .then(res => res.json())
-    .then(pokemon => pokemon.forEach(pok => renderPokemon(pok)))
+function fetchAll(){
+    fetch("http://localhost:3000/pokemon")
+        .then(res => res.json())
+        .then(pokemon => pokemon.forEach(pokemon => renderPokemon(pokemon)))
 }
 
 function fetchOne(id){
+    console.log(id)
     fetch(`http://localhost:3000/pokemon/${id}`)
-    .then(res => res.json())
-    .then(pokemon => renderDetail(pokemon))
+        .then(res => res.json())
+        .then(pokemon => showPokemon(pokemon))
 }
 
 function createPokemon(pokemon){
-    fetch('http://localhost:3000/pokemon',{
-        method: 'POST',
-        headers:{
-            'Content-Type':'application/json'
+    fetch(`http://localhost:3000/pokemon`, {
+        method: "POST",
+        headers: {
+            "Content-type": "Application/json"
         },
         body: JSON.stringify(pokemon)
     })
     .then(res => res.json())
-    .then(pokemon =>{
-        renderPokemon(pokemon)
-    } )
+    .then(pokemon => renderPokemon(pokemon))
 }
 
-
-//DOM manipulation 
+// handlers
 
 function addPokemon(e){
     e.preventDefault()
     const pokemon = {
-        name:e.target['name-input'].value,
-        sprites:{front:e.target.spriteinput.value}
-        }
+        name: e.target['name-input'].value,
+        sprites: {front: e.target.spriteinput.value}
+    }
     createPokemon(pokemon)
-
 }
 
-function renderPokemon(pokemon){
-    let pokemonCard = document.createElement('div')
+//DOM Manipulation
+
+function renderPokemon(pokemon) {
+    let pokemonCard = document.createElement("div")
     pokemonCard.innerHTML = `
-        <div class="card" id=${pokemon.id}>
+        <div class='card' id=${pokemon.id}></div>
             <h2>${pokemon.name}</h2>
-            <img src="${pokemon.sprites.front}" />
-        </div>
+            <img src="${pokemon.sprites.front}"/>
     `
-    pokemonCard.addEventListener('click', ()=> showPokemon(pokemon.id))
-    document.querySelector('#pokemon-container').appendChild(pokemonCard)
+pokemonCard.addEventListener('click', () => {
+    fetchOne(pokemon.id)
+})
+document.querySelector('#pokemon-container').append(pokemonCard)
 }
 
-function showPokemon(id){
-    const container = document.querySelector('#pokemon-container')
-    container.innerHTML = ''
-    fetchOne(id)
-
-
-}
-
-function renderDetail(pokemon){
+function showPokemon(pokemon){
     let pokemonCard = document.createElement('div')
-    let h2 = document.createElement('h2')
-    h2.innerText = `${pokemon.id} : ${pokemon.name}`
-    let img = document.createElement('img')
-    img.src = pokemon.sprites.front
-
-    pokemonCard.append(h2, img)
-
-    container.appendChild(pokemonCard)
+    pokemonCard.className = "card"
+    pokemonCard.id = pokemon.id
+    let header = document.createElement('h3')
+    header.textContent = `${pokemon.id} : ${pokemon.name}`
+    let image = document.createElement('img')
+    image.src = pokemon.sprites.front
+    let height = document.createElement('h3')
+    height.textContent = `height: ${pokemon.height}`
+    let weight = document.createElement('h3')
+    weight.textContent = `weight: ${pokemon.weight}`
+    let type = document.createElement('h3')
+    type.textContent = `type: ${pokemon.types}`
+    let ul = document.createElement('ul')
+    pokemon.stats.forEach(stat => {
+        let li = document.createElement('li')
+        li.textContent = `${stat.value} : ${stat.name}`
+        ul.append(li)
+    })
+    pokemonCard.append(header, image, height, weight, type, ul)
+    const pokemonContainer = document.querySelector("#pokemon-container")
+    pokemonContainer.innerHTML = ""
+    pokemonContainer.append(pokemonCard)
+    console.log(pokemonCard)
 }
-
